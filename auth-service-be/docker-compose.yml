@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/auth-app
+      - JWT_SECRET=your-secure-secret-key
+    # Uncomment if using MongoDB:
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/usr/src/app           # Mount your application code
+      - /usr/src/app/node_modules # Mount node_modules as an anonymous volume to avoid conflict
+    command: npm run start:dev
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:

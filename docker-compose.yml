@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./auth-service-be # Backend service directory
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/auth-app
+      - JWT_SECRET=your-secure-secret-key
+    depends_on:
+      - mongodb
+    volumes:
+      - ./auth-service-be:/usr/src/app         # Mount your backend code folder
+      - /usr/src/app/node_modules             # Mount node_modules as an anonymous volume
+    command: npm run start:dev
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  react-app:
+    build: ./auth-service-fe # Frontend service directory
+    container_name: react-app-container
+    ports:
+      - "5173:5173" # Exposing port 5173
+    volumes:
+      - ./auth-service-fe:/app                # Mount your frontend code folder
+      - /app/node_modules                     # Persist node_modules folder inside container
+    environment:
+      - CHOKIDAR_USEPOLLING=true # For enabling file change detection in Docker
+    command: npm run dev
+
+volumes:
+  mongodb_data:
