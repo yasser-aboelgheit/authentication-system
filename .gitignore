@@ -1,0 +1,21 @@
+# auth-service-be, auth-service-fe
+node_modules/
+build/
+dist/
+.env
+.DS_Store
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# OS/Editor specific files
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.iml
