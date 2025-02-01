@@ -6,7 +6,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
-        logger: ['log', 'error', 'warn', 'debug', 'verbose'], // Enable all log levels
+        logger: ['log', 'error', 'warn', 'debug', 'verbose'],
       });
   app.use(helmet());
   app.enableCors();
