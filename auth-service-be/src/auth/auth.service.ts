@@ -69,7 +69,7 @@ export class AuthService {
     return jwt.sign(
       { userId },
       process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '24h' },
+      { expiresIn: parseInt(process.env.JWT_EXPIRESIN) },
     );
   }
 
@@ -77,8 +77,8 @@ export class AuthService {
   private setCookie(res: Response, token: string): void {
     res.cookie('jwt', token, {
       httpOnly: true, // Prevent access via JavaScript
-      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: parseInt(process.env.JWT_EXPIRESIN),
     });
   }
   
