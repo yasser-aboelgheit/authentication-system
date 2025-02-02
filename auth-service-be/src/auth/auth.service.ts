@@ -6,6 +6,8 @@ import * as jwt from 'jsonwebtoken';
 import { User, UserDocument } from './schemas/user.schema';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
+import { Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -38,25 +40,30 @@ export class AuthService {
     return { token };
   }
 
-  async signIn(signInDto: SignInDto): Promise<{ token: string }> {
+  async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void>  {
+    console.log("WILL SET COOKIE func");
     const { email, password } = signInDto;
 
     // Find user
     const user = await this.userModel.findOne({ email });
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials!!');
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials@@@');
     }
 
     // Generate JWT
     const token = this.generateToken(user._id.toString());
+    this.setCookie(res, token);
 
-    return { token };
+    // Optional: Return a success message
+    res.json({ message: 'Login successful' });
+
+    // return { token };
   }
 
   private generateToken(userId: string): string {
@@ -66,4 +73,15 @@ export class AuthService {
       { expiresIn: '24h' },
     );
   }
+
+
+  private setCookie(res: Response, token: string): void {
+    console.log("WILL SET COOKIE");
+    res.cookie('jwt', token, {
+      httpOnly: true, // Prevent access via JavaScript
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+  }
+  
 }

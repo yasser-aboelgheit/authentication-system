@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.tsx'
 
 
-console.log("EZAYEK");
+console.log("EZAYEK2");
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
