@@ -1,8 +1,12 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt'; // Correct import
 import { User, UserDocument } from './schemas/user.schema';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
@@ -13,6 +17,7 @@ import { Response } from 'express';
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService, // Inject JwtService instead of JwtModule
   ) {}
 
   async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
@@ -34,13 +39,12 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    // Generate JWT
     const token = this.generateToken(user._id.toString());
 
     return { token };
   }
 
-  async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void>  {
+  async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void> {
     const { email, password } = signInDto;
 
     // Find user
@@ -59,27 +63,29 @@ export class AuthService {
     const token = this.generateToken(user._id.toString());
     this.setCookie(res, token);
 
-    // Optional: Return a success message
     res.json({ message: 'Login successful' });
+  }
 
-    // return { token };
+  async getHello(): Promise<string> {
+    return 'hello to you';
   }
 
   private generateToken(userId: string): string {
-    return jwt.sign(
+    // Use JwtService to generate the token instead of jsonwebtoken
+    return this.jwtService.sign(
       { userId },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: parseInt(process.env.JWT_EXPIRESIN) },
+      {
+        secret: process.env.JWT_SECRET || 'your-secret-key',
+        expiresIn: parseInt(process.env.JWT_EXPIRESIN, 10),
+      },
     );
   }
 
-
   private setCookie(res: Response, token: string): void {
-    res.cookie('jwt', token, {
-      httpOnly: true, // Prevent access via JavaScript
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: parseInt(process.env.JWT_EXPIRESIN),
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', 
+      maxAge: parseInt(process.env.JWT_EXPIRESIN, 10),
     });
   }
-  
 }
