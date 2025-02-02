@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, AlertDescription } from './components/ui/alert.tsx';
 
 // Type definitions
@@ -10,21 +9,15 @@ type AuthError = {
 
 type Page = 'signin' | 'signup' | 'app';
 
-// Password validation helper
-const validatePassword = (password: string): boolean => {
-  const hasMinLength = password.length >= 8;
-  const hasLetter = /[a-zA-Z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-  return hasMinLength && hasLetter && hasNumber && hasSpecial;
-};
-
 // Main Auth Container Component
 const AuthSystem = () => {
   const [currentPage, setCurrentPage] = useState<Page>('signin');
   
   const renderPage = () => {
-    switch(currentPage) {
+    // call function to check if cookie valid
+    // will call the backend with the cookie JWT, to validate
+    // or use interceptor
+    switch (currentPage) {
       case 'signup':
         return <SignUp onNavigate={setCurrentPage} />;
       case 'signin':
@@ -34,11 +27,7 @@ const AuthSystem = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {renderPage()}
-    </div>
-  );
+  return <div className="min-h-screen bg-gray-50">{renderPage()}</div>;
 };
 
 // SignUp Component
@@ -54,22 +43,15 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
     e.preventDefault();
     setError(null);
 
-    // Validate password
-    if (!validatePassword(formData.password)) {
-      setError({
-        message: 'Password must be at least 8 characters and contain a letter, number, and special character',
-        field: 'password',
-      });
-      return;
-    }
-
     try {
-      // Here you would make your API call to the backend
+      console.log("WILL TRY");
       const response = await fetch('http://localhost:3000/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        credentials: 'include', // Include cookies in the request
       });
+      console.log("TRIED");
 
       if (response.ok) {
         onNavigate('app');
@@ -134,9 +116,6 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
-            <p className="mt-1 text-sm text-gray-500">
-              Must be at least 8 characters with a letter, number, and special character
-            </p>
           </div>
 
           <button
@@ -178,6 +157,7 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
+        credentials: 'include', // Include cookies in the request
       });
 
       if (response.ok) {
@@ -255,16 +235,22 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
 
 // Application Page Component
 const ApplicationPage = () => {
-  const handleLogout = () => {
-    // Logic for logging out (e.g., clearing tokens, redirecting)
-    console.log("User logged out");
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:3000/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Ensure cookies are included in the logout request
+      });
+      console.log('Logged out');
+    } catch {
+      console.log('Failed to log out');
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top Bar */}
       <div className="flex justify-between items-center p-4 bg-gray-100 shadow">
-        <h2 className="text-xl font-semibold">Easy generator</h2>
+        <h2 className="text-xl font-semibold">Easy Generator</h2>
         <button
           onClick={handleLogout}
           className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -273,7 +259,6 @@ const ApplicationPage = () => {
         </button>
       </div>
 
-      {/* Main Content */}
       <div className="flex-grow flex items-center justify-center">
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
           <h1 className="text-3xl font-bold text-center">
