@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api:
-    build: ./auth-service-be # Backend service directory
+    build: ./auth-service-be
     ports:
       - "3000:3000"
     environment:
@@ -11,8 +11,8 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./auth-service-be:/usr/src/app         # Mount your backend code folder
-      - /usr/src/app/node_modules             # Mount node_modules as an anonymous volume
+      - ./auth-service-be:/usr/src/app
+      - /usr/src/app/node_modules
     command: npm run start:dev
 
   mongodb:
@@ -23,15 +23,15 @@ services:
       - mongodb_data:/data/db
 
   react-app:
-    build: ./auth-service-fe # Frontend service directory
+    build: ./auth-service-fe
     container_name: react-app-container
     ports:
-      - "5173:5173" # Exposing port 5173
+      - "5173:5173"
     volumes:
-      - ./auth-service-fe:/app                # Mount your frontend code folder
-      - /app/node_modules                     # Persist node_modules folder inside container
+      - ./auth-service-fe:/app
+      - /app/node_modules
     environment:
-      - CHOKIDAR_USEPOLLING=true # For enabling file change detection in Docker
+      - CHOKIDAR_USEPOLLING=true
     command: npm run dev
 
 volumes:

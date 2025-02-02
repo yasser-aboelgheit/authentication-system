@@ -41,7 +41,6 @@ export class AuthService {
   }
 
   async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void>  {
-    console.log("WILL SET COOKIE func");
     const { email, password } = signInDto;
 
     // Find user
@@ -76,7 +75,6 @@ export class AuthService {
 
 
   private setCookie(res: Response, token: string): void {
-    console.log("WILL SET COOKIE");
     res.cookie('jwt', token, {
       httpOnly: true, // Prevent access via JavaScript
       secure: process.env.NODE_ENV === 'production', // Use HTTPS in production

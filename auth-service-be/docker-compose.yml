@@ -8,12 +8,11 @@ services:
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/auth-app
       - JWT_SECRET=your-secure-secret-key
-    # Uncomment if using MongoDB:
     depends_on:
       - mongodb
     volumes:
-      - .:/usr/src/app           # Mount your application code
-      - /usr/src/app/node_modules # Mount node_modules as an anonymous volume to avoid conflict
+      - .:/usr/src/app           
+      - /usr/src/app/node_modules 
     command: npm run start:dev
 
   mongodb:
