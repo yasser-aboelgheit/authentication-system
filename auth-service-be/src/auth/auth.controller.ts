@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
@@ -13,8 +13,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(signUpDto);
+  signUp(@Body() signUpDto: SignUpDto, @Res() res: Response) {
+    return this.authService.signUp(signUpDto, res);
   }
 
   @Post('signin')
@@ -23,9 +23,13 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('getHello')
-  getHello() {
-    console.log(`GetHello call:`);
-    return this.authService.getHello();
+  @Get('get-user')
+  getUser(@Request() request) {
+    return this.authService.getUser(request);
+  }
+
+  @Post('logout')
+  logut(@Res() res: Response) {
+    return this.authService.logout(res);
   }
 }

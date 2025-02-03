@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, AlertDescription } from './components/ui/alert.tsx';
 
 // Type definitions
@@ -8,11 +8,40 @@ type AuthError = {
 };
 
 type Page = 'signin' | 'signup' | 'app';
+type ApplicationPageProps = {
+  userName: string | null;
+};
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+// 
 
 // Main Auth Container Component
 const AuthSystem = () => {
   const [currentPage, setCurrentPage] = useState<Page>('signin');
-  
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (currentPage == 'signup'){
+      return
+    }
+    fetch(`${BASE_URL}/auth/get-user`, {
+      method: "GET",
+      credentials: "include",
+    }).then(async(res) => {
+      if (res.ok){
+        const name = await res.text();
+        setUserName(name);
+        setCurrentPage('app');
+      }
+      else {
+        setCurrentPage('signin')
+      }})
+      .catch(() =>  setCurrentPage('signin'))
+      .finally(() => setLoading(false));
+
+  }, [currentPage]);
+
   const renderPage = () => {
     // call function to check if cookie valid
     // will call the backend with the cookie JWT, to validate
@@ -23,10 +52,12 @@ const AuthSystem = () => {
       case 'signin':
         return <SignIn onNavigate={setCurrentPage} />;
       case 'app':
-        return <ApplicationPage />;
+        return <ApplicationPage userName={userName} />;
     }
   };
-
+  if ( loading ){
+    return <div>loading</div>
+  }
   return <div className="min-h-screen bg-gray-50">{renderPage()}</div>;
 };
 
@@ -44,14 +75,12 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
     setError(null);
 
     try {
-      console.log("WILL TRY");
-      const response = await fetch('http://localhost:3000/auth/signup', {
+      const response = await fetch(`${BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
         credentials: 'include', // Include cookies in the request
       });
-      console.log("TRIED");
 
       if (response.ok) {
         onNavigate('app');
@@ -153,7 +182,7 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/signin', {
+      const response = await fetch(`${BASE_URL}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -233,15 +262,15 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
   );
 };
 
-// Application Page Component
-const ApplicationPage = () => {
+
+const ApplicationPage: React.FC<ApplicationPageProps> = ({ userName }) => {
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:3000/auth/logout', {
+      await fetch(`${BASE_URL}/auth/logout`, {
         method: 'POST',
-        credentials: 'include', // Ensure cookies are included in the logout request
+        credentials: 'include',
       });
-      console.log('Logged out');
+      window.location.reload();
     } catch {
       console.log('Failed to log out');
     }
@@ -262,7 +291,7 @@ const ApplicationPage = () => {
       <div className="flex-grow flex items-center justify-center">
         <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
           <h1 className="text-3xl font-bold text-center">
-            Welcome to the application
+            Welcome {userName ?? 'Guest'}! to the application
           </h1>
         </div>
       </div>

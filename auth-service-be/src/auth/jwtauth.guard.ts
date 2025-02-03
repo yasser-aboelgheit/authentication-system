@@ -16,7 +16,7 @@ import {
       const token = request.cookies?.access_token;
   
       if (!token) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('User not authenticated!!!!');
       }
   
       try {
@@ -25,7 +25,7 @@ import {
         });
         request["user"] = payload;
       } catch {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('User not authenticated!!!!!22222');
       }
   
       return true;

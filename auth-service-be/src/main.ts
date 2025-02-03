@@ -18,6 +18,6 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(3000);
-   Logger.log('Application is runninggg on: http://localhost:3000', 'Bootstrap');
+   Logger.log('Application is running', 'Bootstrap');
 }
 bootstrap();

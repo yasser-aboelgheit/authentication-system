@@ -20,7 +20,7 @@ export class AuthService {
     private jwtService: JwtService, // Inject JwtService instead of JwtModule
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUp(signUpDto: SignUpDto, @Res() res: Response): Promise<void> {
     const { email, password, name } = signUpDto;
 
     // Check if user exists
@@ -40,8 +40,9 @@ export class AuthService {
     });
 
     const token = this.generateToken(user._id.toString());
+    this.setCookie(res, token);
 
-    return { token };
+    res.json({ message: 'signup successful' });
   }
 
   async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void> {
@@ -66,8 +67,25 @@ export class AuthService {
     res.json({ message: 'Login successful' });
   }
 
-  async getHello(): Promise<string> {
-    return 'hello to you';
+  async getUser(request: Request): Promise<String> {
+    const userId = request['user']?.userId;  // Access the user ID from the JWT payload
+    if (!userId) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    // Fetch the user from your database (MongoDB) by user ID
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return user.name;
+  }
+  
+
+  async logout(@Res() res: Response): Promise<void> {
+    this.unSetCookie(res);
+    res.status(200).send('Logged out successfully');
   }
 
   private generateToken(userId: string): string {
@@ -83,9 +101,19 @@ export class AuthService {
 
   private setCookie(res: Response, token: string): void {
     res.cookie('access_token', token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === 'production', 
       maxAge: parseInt(process.env.JWT_EXPIRESIN, 10),
     });
   }
+
+  private unSetCookie(res: Response): void {
+    res.cookie('access_token', '', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production', 
+      expires: new Date(0),
+    });
+  }
+
+
 }
