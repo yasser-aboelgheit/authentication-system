@@ -102,3 +102,11 @@ Once the services are up and running, you can use the following API endpoints:
 2. **Password Recovery**: Implement a password reset functionality (e.g., forgot password).
 3. **Role Based Access Control**: This type of authorization is used to give certain groups of users certain permissions, for example admins, ops....
 4. **UI/UX Improvements**: Improve the user interface and experience, making it more intuitive and user-friendly.
+
+
+
+
+## ScreenShots
+![Screenshot 2025-02-03 at 9 19 13 AM](https://github.com/user-attachments/assets/2f5a18f4-098b-4179-b1d9-b5acca04a233)
+![Screenshot 2025-02-03 at 9 18 54 AM](https://github.com/user-attachments/assets/ed438ef3-d959-4fb8-9088-2ef115957103)
+![Screenshot 2025-02-03 at 9 18 37 AM](https://github.com/user-attachments/assets/6544f16b-a110-4755-90ab-b049c3716747)
