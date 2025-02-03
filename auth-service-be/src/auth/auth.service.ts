@@ -12,20 +12,28 @@ import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { Res } from '@nestjs/common';
 import { Response } from 'express';
+import { LoggingService } from 'src/logging/logging.service';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private jwtService: JwtService, // Inject JwtService instead of JwtModule
+    private jwtService: JwtService,
+    private readonly loggingService: LoggingService,
   ) {}
 
   async signUp(signUpDto: SignUpDto, @Res() res: Response): Promise<void> {
     const { email, password, name } = signUpDto;
-
+    this.loggingService.debug(
+      `signing up user with the following email: ${email}`,
+    );
     // Check if user exists
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
+      this.loggingService.warn(
+        `Sign up failed: email: ${email} already exists`,
+      );
       throw new ConflictException('Email already exists');
     }
 
@@ -38,7 +46,9 @@ export class AuthService {
       name,
       password: hashedPassword,
     });
-
+    this.loggingService.log(
+      `User registered successfully`,
+    );
     const token = this.generateToken(user._id.toString());
     this.setCookie(res, token);
 
@@ -47,23 +57,33 @@ export class AuthService {
 
   async signIn(signInDto: SignInDto, @Res() res: Response): Promise<void> {
     const { email, password } = signInDto;
-
+    this.loggingService.debug(
+      `sign in user with email: ${email}`,
+    );
     // Find user
     const user = await this.userModel.findOne({ email });
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials!!');
+      this.loggingService.warn(
+        `Sign in failed: No user found with matching email  ${email}`,
+      );
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials@@@');
+      this.loggingService.warn(
+        `Sign in failed: password Invalid  for user ${email}`,
+      );
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     // Generate JWT
     const token = this.generateToken(user._id.toString());
     this.setCookie(res, token);
-
+    this.loggingService.log(
+      `User with email ${email} signed in successfully`,
+    );
     res.json({ message: 'Login successful' });
   }
 
@@ -73,7 +93,6 @@ export class AuthService {
       throw new UnauthorizedException('User not authenticated');
     }
 
-    // Fetch the user from your database (MongoDB) by user ID
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -89,7 +108,6 @@ export class AuthService {
   }
 
   private generateToken(userId: string): string {
-    // Use JwtService to generate the token instead of jsonwebtoken
     return this.jwtService.sign(
       { userId },
       {
