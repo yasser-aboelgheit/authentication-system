@@ -41,6 +41,7 @@ Vite was selected for its fast development environment, thanks to native ES modu
 │   ├── src
 │   │   ├── app.module.ts
 │   │   ├── auth
+│   │   ├── logging
 │   │   └── main.ts
 │   ├── tsconfig.json
 │   └── tsconfig.tsbuildinfo
@@ -62,12 +63,14 @@ Vite was selected for its fast development environment, thanks to native ES modu
 │   │   ├── components
 │   │   ├── index.css
 │   │   ├── main.tsx
+│   │   ├── pages
+│   │   ├── router.tsx
 │   │   └── vite-env.d.ts
 │   ├── tsconfig.app.json
 │   ├── tsconfig.json
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
-├── docker-compose.yml
+└── docker-compose.yml
 ```
 
 ## Prerequisites
