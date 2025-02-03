@@ -43,9 +43,6 @@ const AuthSystem = () => {
   }, [currentPage]);
 
   const renderPage = () => {
-    // call function to check if cookie valid
-    // will call the backend with the cookie JWT, to validate
-    // or use interceptor
     switch (currentPage) {
       case 'signup':
         return <SignUp onNavigate={setCurrentPage} />;
@@ -89,7 +86,6 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         setError({ message: data.message });
       }
     } catch (err) {
-      console.log(err);
       setError({ message: 'Failed to sign up. Please try again.' });
     }
   };
@@ -203,7 +199,6 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         setError({ message: data.message });
       }
     } catch (err) {
-      console.log(err);
       setError({ message: 'Failed to sign in. Please try again.' });
     }
   };

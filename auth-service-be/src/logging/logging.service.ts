@@ -4,23 +4,37 @@ import { Injectable, Logger, Scope } from '@nestjs/common';
 export class LoggingService {
   private readonly logger = new Logger(LoggingService.name);
 
-  log(message: string) {
-    this.logger.log(message);
+  private formatMessage(message: unknown): string {
+    return message !== undefined ? String(message) : '[Undefined message]';
   }
 
-  info(message: string, context?: string) {
-    this.logger.log(message, context);
+  log(message: unknown, context?: string) {
+    context
+      ? this.logger.log(this.formatMessage(message), context)
+      : this.logger.log(this.formatMessage(message));
   }
 
-  warn(message: string, context?: string) {
-    this.logger.warn(message, context);
+  info(message: unknown, context?: string) {
+    context
+      ? this.logger.log(this.formatMessage(message), context)
+      : this.logger.log(this.formatMessage(message));
   }
 
-  error(message: string, trace?: string, context?: string) {
-    this.logger.error(message, trace, context);
+  warn(message: unknown, context?: string) {
+    context
+      ? this.logger.warn(this.formatMessage(message), context)
+      : this.logger.warn(this.formatMessage(message));
   }
 
-  debug(message: string, context?: string) {
-    this.logger.debug(message, context);
+  error(message: unknown, trace?: string, context?: string) {
+    context
+      ? this.logger.error(this.formatMessage(message), trace, context)
+      : this.logger.error(this.formatMessage(message), trace);
+  }
+
+  debug(message: unknown, context?: string) {
+    context
+      ? this.logger.debug(this.formatMessage(message), context)
+      : this.logger.debug(this.formatMessage(message));
   }
 }
