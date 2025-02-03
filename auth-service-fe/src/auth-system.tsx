@@ -186,7 +186,7 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-        credentials: 'include', // Include cookies in the request
+        credentials: 'include',
       });
 
       if (response.ok) {
