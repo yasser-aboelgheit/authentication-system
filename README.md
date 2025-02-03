@@ -19,6 +19,15 @@
 - **Authentication**: HTTP cookies for session management
 - **Containerization**: Docker (with docker-compose)
 
+## Technical Decisions
+
+- **HTTP Cookies to Store the JWT Token:**
+I chose HTTP cookies to store the JWT token for enhanced security and simplicity. Cookies automatically include the token with each request, reducing manual management. By using the HttpOnly and Secure flags, the cookie is protected from XSS and is only sent over HTTPS, improving security. Additionally, cookies support session persistence across page reloads.
+
+- **Vite for Frontend Development:**
+Vite was selected for its fast development environment, thanks to native ES module support and hot module replacement (HMR). It also provides optimized production builds with smaller bundle sizes and built-in TypeScript/JSX support, making it an ideal choice for this project.
+
+
 ## Project Structure
 
 ```
