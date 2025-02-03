@@ -13,7 +13,7 @@ type ApplicationPageProps = {
 };
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-// 
+//
 
 // Main Auth Container Component
 const AuthSystem = () => {
@@ -22,24 +22,24 @@ const AuthSystem = () => {
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentPage == 'signup'){
-      return
+    if (currentPage == 'signup') {
+      return;
     }
     fetch(`${BASE_URL}/auth/get-user`, {
-      method: "GET",
-      credentials: "include",
-    }).then(async(res) => {
-      if (res.ok){
-        const name = await res.text();
-        setUserName(name);
-        setCurrentPage('app');
-      }
-      else {
-        setCurrentPage('signin')
-      }})
-      .catch(() =>  setCurrentPage('signin'))
+      method: 'GET',
+      credentials: 'include',
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const name = await res.text();
+          setUserName(name);
+          setCurrentPage('app');
+        } else {
+          setCurrentPage('signin');
+        }
+      })
+      .catch(() => setCurrentPage('signin'))
       .finally(() => setLoading(false));
-
   }, [currentPage]);
 
   const renderPage = () => {
@@ -55,8 +55,8 @@ const AuthSystem = () => {
         return <ApplicationPage userName={userName} />;
     }
   };
-  if ( loading ){
-    return <div>loading</div>
+  if (loading) {
+    return <div>loading</div>;
   }
   return <div className="min-h-screen bg-gray-50">{renderPage()}</div>;
 };
@@ -89,6 +89,7 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         setError({ message: data.message });
       }
     } catch (err) {
+      console.log(err);
       setError({ message: 'Failed to sign up. Please try again.' });
     }
   };
@@ -97,7 +98,7 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
         <h2 className="text-3xl font-bold text-center">Create Account</h2>
-        
+
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error.message}</AlertDescription>
@@ -115,7 +116,9 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               required
               className="mt-1 block w-full rounded-md border border-gray-300 p-2"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
           </div>
 
@@ -129,7 +132,9 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               required
               className="mt-1 block w-full rounded-md border border-gray-300 p-2"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
             />
           </div>
 
@@ -143,7 +148,9 @@ const SignUp = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               required
               className="mt-1 block w-full rounded-md border border-gray-300 p-2"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
             />
           </div>
 
@@ -196,6 +203,7 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         setError({ message: data.message });
       }
     } catch (err) {
+      console.log(err);
       setError({ message: 'Failed to sign in. Please try again.' });
     }
   };
@@ -222,7 +230,9 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               required
               className="mt-1 block w-full rounded-md border border-gray-300 p-2"
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
             />
           </div>
 
@@ -236,7 +246,9 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
               required
               className="mt-1 block w-full rounded-md border border-gray-300 p-2"
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
             />
           </div>
 
@@ -261,7 +273,6 @@ const SignIn = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
     </div>
   );
 };
-
 
 const ApplicationPage: React.FC<ApplicationPageProps> = ({ userName }) => {
   const handleLogout = async () => {

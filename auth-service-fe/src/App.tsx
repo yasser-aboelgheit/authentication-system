@@ -1,9 +1,7 @@
-import AuthSystem from './auth-system.tsx'
+import AuthSystem from './auth-system.tsx';
 
 function App() {
-  return (
-    <AuthSystem />
-  )
+  return <AuthSystem />;
 }
 
-export default App
+export default App;
