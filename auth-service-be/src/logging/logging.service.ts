@@ -1,11 +1,11 @@
-import { Injectable, Logger, Scope } from '@nestjs/common';
+import { Injectable, Logger, Scope } from "@nestjs/common";
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggingService {
   private readonly logger = new Logger(LoggingService.name);
 
   private formatMessage(message: unknown): string {
-    return message !== undefined ? String(message) : '[Undefined message]';
+    return message !== undefined ? String(message) : "[Undefined message]";
   }
 
   log(message: unknown, context?: string) {

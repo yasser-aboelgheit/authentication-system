@@ -1,4 +1,3 @@
-// Type definitions
 export type AuthError = {
   message: string;
   field?: string;
